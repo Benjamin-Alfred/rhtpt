@@ -160,29 +160,35 @@ new Vue({
             }
             if(message.length > 0){
                 console.log(formData);
-                toastr.error(message, 'Failure Alert', {timeOut: 5000});
+                toastr.error(message, 'Failure Alert', {timeOut: 15000});
             }else{
-                this.$http.post('/vueresults', formData).then((response) => {
-                    this.changePage(this.pagination.current_page);
-                    $("#create-result").modal('hide');
-                    console.log(response.data);
-                    if (response.data.length > 0) {
-                        if (response.data[0] == "1") {
-                            toastr.error('There is no active PT round at the moment!', 'Failure Alert', {timeOut: 5000});
-                        }else if (response.data[0] == "2") {
-                            toastr.error('Please verify that you have entered the correct Tester ID as found on your form!', 'Failure Alert', {timeOut: 5000});
-                        }else if (response.data[0] == "3") {
-                            toastr.error('Results for your panel have already been submitted!', 'Failure Alert', {timeOut: 5000});
-                        }else if (response.data[0] == "4") {
-                            toastr.error('You have already submitted a result for the current round!', 'Failure Alert', {timeOut: 5000});
-                        }
+                if(!this.loading){
+                    this.loading = true;
 
-                    }else{
-                        toastr.success('The result was saved successfully.', 'Success Alert', {timeOut: 5000});
-                    }
-                }, (response) => {
-                    this.formErrors = response.data;
-                });
+                    this.$http.post('/vueresults', formData).then((response) => {
+                        this.loading = false;
+                        this.changePage(this.pagination.current_page);
+                        $("#create-result").modal('hide');
+                        console.log(response.data);
+                        if (response.data.length > 0) {
+                            if (response.data[0] == "1") {
+                                toastr.error('There is no active PT round at the moment!', 'Failure Alert', {timeOut: 5000});
+                            }else if (response.data[0] == "2") {
+                                toastr.error('Please verify that you have entered the correct Tester ID as found on your form!', 'Failure Alert', {timeOut: 5000});
+                            }else if (response.data[0] == "3") {
+                                toastr.error('Results for your panel have already been submitted!', 'Failure Alert', {timeOut: 5000});
+                            }else if (response.data[0] == "4") {
+                                toastr.error('You have already submitted a result for the current round!', 'Failure Alert', {timeOut: 5000});
+                            }
+
+                        }else{
+                            toastr.success('The result was saved successfully.', 'Success Alert', {timeOut: 5000});
+                        }
+                    }, (response) => {
+                        this.formErrors = response.data;
+                        this.loading = false;
+                    });
+                }
             }
         },
 
@@ -203,44 +209,57 @@ new Vue({
         editResult: function(result){
             //    Fetch the result using the id
             let id = result.id;
-            this.$http.get('/pt/'+id).then((response) => {
-                this.frmData = response.data;
-                for (var i = this.frmData.results.length - 1; i >= 0; i--) {
-                    this.fieldvalues[this.frmData.results[i].field_id] = this.frmData.results[i].response;
-                }
-                //Update my-date-component
-                for (var dateKey in this.$refs) {
-                    this.$refs[dateKey][0].setDate(this.fieldvalues[dateKey.substring(dateKey.length - 1, dateKey.length)]);
-                }
-                this.loadRoundsDone(1);
-                this.frmData.round_id = this.frmData.round.id;
-                this.frmData.round_name = this.frmData.round.name;
-                console.log(this.frmData.round.name);
-            });
+            if(!this.loading){
+                this.loading = true;
+                this.$http.get('/pt/'+id).then((response) => {
+                    this.frmData = response.data;
+                    for (var i = this.frmData.results.length - 1; i >= 0; i--) {
+                        this.fieldvalues[this.frmData.results[i].field_id] = this.frmData.results[i].response;
+                    }
+                    //Update my-date-component
+                    for (var dateKey in this.$refs) {
+                        this.$refs[dateKey][0].setDate(this.fieldvalues[dateKey.substring(dateKey.length - 1, dateKey.length)]);
+                    }
+                    this.loadRoundsDone(1);
+                    this.frmData.round_id = this.frmData.round.id;
+                    this.frmData.round_name = this.frmData.round.name;
+                    console.log(this.frmData.round.name);
+                    this.loading = false;
+                });
+            }
             $("#edit-result").modal('show');
         },
 
         viewResult: function(result){
             //    Fetch the result using the id
             let id = result.id;
-            this.$http.get('/pt/'+id).then((response) => {
-                this.viewFormData = response.data;
-            });
+            if(!this.loading){
+                this.loading = true;
+                this.$http.get('/pt/'+id).then((response) => {
+                    this.viewFormData = response.data;
+                    this.loading = false;
+                });
+            }
             $("#view-result").modal('show');
         },
 
         updateResult: function(id, scope){
 
-                let myForm = document.getElementById('update_test_results');
-                let input = new FormData(myForm);
+            let myForm = document.getElementById('update_test_results');
+            let input = new FormData(myForm);
 
+            if(!this.loading){
+                this.loading = true;
                 this.$http.post('/update_results/'+id,input).then((response) => {
+                    this.loading = false;
                     this.changePage(this.pagination.current_page);
                     $("#edit-result").modal('hide');
                     toastr.success('Result Updated Successfully.', 'Success Alert', {timeOut: 5000});
                 }, (response) => {
+                    this.loading = false;
                     this.formErrorsUpdate = response.data;
                 });
+            }
         },
 
         verifyResult: function(){
@@ -254,7 +273,7 @@ new Vue({
         }, 
 
         importResults: function(){
-           let myForm = document.getElementById('import_results');
+            let myForm = document.getElementById('import_results');
             let formData = new FormData(myForm);
             this.$http.post('/result/import', formData).then((response) => {
                 this.changePage(this.pagination.current_page);
@@ -318,9 +337,11 @@ new Vue({
         // Verfiy the evaluated 
         showEvaluatedResults: function(result){
             //    Fetch the result using the id
+            this.loading = true;
             let id = result.id;
             this.$http.get('/show_evaluated_results/'+id).then((response) => {
                 this.evaluated_results = response.data;
+                this.loading = false;
             });
             $("#view-evaluted-result").modal('show');
         },
@@ -420,9 +441,11 @@ new Vue({
         },
 
         update_evaluated_results: function(id){
+            this.loading = true;
             let myForm = document.getElementById('update_evaluated_results');
             let formData = new FormData(myForm);
             this.$http.post('/update_evaluated_results/'+id, formData).then((response) => {
+                this.loading = false;
                 this.changePage(this.pagination.current_page);
                 $("#update-evaluated-result").modal('hide');
                 toastr.success('Result Changed Successfully.', 'Success Alert', {timeOut: 5000});
@@ -915,7 +938,7 @@ Vue.component('my-date-component', {
     data: function () {
         return {
             //Drop down list for dates
-            years: ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2025", "2026"],
+            years: ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"],
             months: [
                 {text: "January", value: "01"},
                 {text: "February", value: "02"},

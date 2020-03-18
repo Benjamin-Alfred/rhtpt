@@ -249,16 +249,15 @@ class ResultController extends Controller
             }else
             {
                 //  If Pt entry exists reuse it
-                $pt = Pt::where('enrolment_id', '=', $enrolment->id)->first();
-                if(is_null($pt)) $pt = new Pt();
+                $pt = Pt::firstOrNew(['enrolment_id' => $enrolment->id]);
                 $pt->enrolment_id = $enrolment->id;
-                if(is_null($pt->panel_status))$pt->panel_status = Pt::NOT_CHECKED;
+                $pt->panel_status = Pt::NOT_CHECKED;
                 $pt->save();
 
-                $enrolment->tester_id = Auth::user()->id;        
+                $enrolment->tester_id = Auth::user()->id;
                 //update enrollment status to 1
-                $enrolment->status = Enrol::DONE;        
-                $enrolment->save();     
+                $enrolment->status = Enrol::DONE;
+                $enrolment->save();
                
                 //  Proceed to form-fields
                 // get all fields and insert into results
@@ -349,44 +348,50 @@ class ResultController extends Controller
         $id = $request->pt_id;
         $user_id = Auth::user()->id;
 
-        \Log::info("Verifying result. Done By (users.id): $user_id for PTID: $id");
-        \Log::info($request);
-        $result = Pt::find($id);
-        $result->verified_by = $user_id;
-        $result->panel_status = Pt::CHECKED;
-        if($request->comment)
-            $result->comment = $request->comment;
-        $result->save();
-        // Send SMS
-        $round = Round::find($result->enrolment->round->id)->description;
-        $message = Notification::where('template', Notification::RESULTS_RECEIVED)->first()->message;
-        $message = $this->replace_between($message, '[', ']', $round);
-        $message = str_replace(' [', ' ', $message);
-        $message = str_replace(']', ' ', $message);
-        
-        $created = Carbon::today()->toDateTimeString();
-        $updated = Carbon::today()->toDateTimeString();
-        //  Time
-        $now = Carbon::now('Africa/Nairobi');
-        $bulk = DB::table('bulk')->insert(['notification_id' => Notification::RESULTS_RECEIVED, 'round_id' => $result->enrolment->round->id, 'text' => $message, 'user_id' => $result->enrolment->performer->id, 'date_sent' => $now, 'created_at' => $created, 'updated_at' => $updated]);
-        
-        //get the last id inserted and use it in the broadcast table
-        $bulk_id = DB::getPdo()->lastInsertId(); 
+        $result = Pt::where('id', $id)->where('panel_status', Pt::NOT_CHECKED)->first();
 
-        $recipients = NULL;
-        $recipients = User::find($result->enrolment->performer->id)->phone;
+        if($result){
 
-        if($recipients)
-        {
-            $sms = new SmsHandler;
+            $result->verified_by = $user_id;
+            $result->panel_status = Pt::CHECKED;
+            if($request->comment)
+                $result->comment = $request->comment;
+            $result->save();
 
-            // foreach($recipients as $recipient)
-            // {
-                $responseMessage = $sms->sendMessage($recipients, $message);
-                //  Save the results
-                DB::table('broadcast')->insert(['number' => $recipients, 'bulk_id' => $bulk_id]);
-            // }
- 
+            \Log::info("Verifying result. Done By (users.id): $user_id for PTID: $id");
+            \Log::info($request);
+    
+            // Send SMS
+            $round = Round::find($result->enrolment->round->id)->description;
+            $message = Notification::where('template', Notification::RESULTS_RECEIVED)->first()->message;
+            $message = $this->replace_between($message, '[', ']', $round);
+            $message = str_replace(' [', ' ', $message);
+            $message = str_replace(']', ' ', $message);
+            
+            $created = Carbon::today()->toDateTimeString();
+            $updated = Carbon::today()->toDateTimeString();
+            //  Time
+            $now = Carbon::now('Africa/Nairobi');
+            $bulk = DB::table('bulk')->insert(['notification_id' => Notification::RESULTS_RECEIVED, 'round_id' => $result->enrolment->round->id, 'text' => $message, 'user_id' => $result->enrolment->performer->id, 'date_sent' => $now, 'created_at' => $created, 'updated_at' => $updated]);
+            
+            //get the last id inserted and use it in the broadcast table
+            $bulk_id = DB::getPdo()->lastInsertId(); 
+
+            $recipients = NULL;
+            $recipients = User::find($result->enrolment->performer->id)->phone;
+
+            if($recipients)
+            {
+                $sms = new SmsHandler;
+
+                // foreach($recipients as $recipient)
+                // {
+                    $responseMessage = $sms->sendMessage($recipients, $message);
+                    //  Save the results
+                    DB::table('broadcast')->insert(['number' => $recipients, 'bulk_id' => $bulk_id]);
+                // }
+     
+            }
         }
         return response()->json($result);
     }
