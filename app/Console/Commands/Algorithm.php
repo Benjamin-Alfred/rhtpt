@@ -425,7 +425,7 @@ class Algorithm extends Command
         $dt_shipped = Carbon::parse($date_panels_shipped);
         $dt_constituted = Carbon::parse($date_pt_panel_constituted);
         $dt_tested = Carbon::parse($date_pt_panel_tested);
-        if(strtotime($date_pt_panel_tested) == strtotime($date_pt_panel_constituted) || $dt_constituted->diffInDays($dt_tested) > 1 || $dt_tested->le($dt_shipped)){
+        if(strtotime($date_pt_panel_tested) == strtotime($date_pt_panel_constituted) || $dt_constituted->diffInDays($dt_tested) > 1 || $dt_tested->lte($dt_shipped)){
             $dev_from_procedure = 1;
         }
 
