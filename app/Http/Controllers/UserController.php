@@ -892,12 +892,28 @@ class UserController extends Controller
     }
     
     /**
-     * Get user's role ID and tier ID
+     * Get user's role ID, tier ID and active round ID
      *
      * @return array 
      */
     public function getRole(){
-        return ["role_id" => Auth::user()->ru()->role_id, "tier" => Auth::user()->ru()->tier];
+
+        $activeRound = 0;
+
+        //Get active/current round
+        try {
+            
+            $currentRound = Round::where('end_date', '>', Carbon::today())
+                        ->where('start_date', '<', Carbon::today())->where('status', '=', 0)->first();
+
+            if($currentRound){
+                $activeRound = $currentRound->name;
+            }
+        } catch (\Exception $e) {
+            \Log::info($e);
+        }
+
+        return ["role_id" => Auth::user()->ru()->role_id, "tier" => Auth::user()->ru()->tier, "active_round" => $activeRound];
     }
 
     public function assign_uid(){

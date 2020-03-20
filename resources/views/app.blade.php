@@ -146,11 +146,16 @@
                             <li style="display:none;" class="{!! Request::segment(1)==strtolower('nonperf')?strtolower(trans('messages.active')):'' !!}">
                                 <a href="{!! url('nonperf') !!}"><i class="fa fa-bookmark"></i> {!! trans_choice('messages.nonperf', 2) !!}</a>
                             </li>
+                            @endpermission
                             @permission('read-program')
                             <li class="{!! Request::segment(1)==strtolower('designation')?strtolower(trans('messages.active')):'' !!}">
                                 <a href="{!! url('designation') !!}"><i class="fa fa-bookmark"></i> Designations</a>
                             </li>
                             @endpermission
+                            @permission('read-program')
+                            <li class="{!! Request::segment(1)==strtolower('survey')?strtolower(trans('messages.active')):'' !!}">
+                                <a href="{!! url('survey') !!}"><i class="fa fa-bookmark"></i> Survey Questions</a>
+                            </li>
                             @endpermission
                         </ul>
                     </li>
@@ -340,6 +345,8 @@
 
         @if(Request::segment(1)==strtolower('event'))
         <script src="{{ asset('controllers/event.js') }}"></script>
+        @elseif(Request::segment(1)==strtolower('survey'))
+        <script src="{{ asset('controllers/survey.js') }}"></script>
         @elseif(Request::segment(1)==strtolower('role'))
         <script src="{{ asset('controllers/role.js') }}"></script>
         @elseif(Request::segment(1)==strtolower('option'))

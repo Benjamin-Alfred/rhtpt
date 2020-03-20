@@ -237,6 +237,11 @@
             <a v-if="result.panel_status==3 && result.feedback !=null && result.download_status ==0" class="btn btn-sm btn-wisteria" :href="'print_result/' +result.id + '?type=' + result.feedback"><i class="fa fa-print"></i> Print</a>
              <a v-if="result.panel_status==3 && result.feedback !=null && result.download_status ==1" class="btn btn-sm btn-concrete" :href="'print_result/' +result.id + '?type=' + result.feedback"><i class="fa fa-print"></i> Print Again</a>
             @endpermission 
+            @permission('create-customer-survey-response') 
+                <button  v-if="result.rnd==active_round && result.has_feedback==0" 
+                    class="btn btn-sm btn-info" @click.prevent="enterFeedback(result)" >
+                        <i class="fa fa-user"></i> Customer Survey</button>
+            @endpermission 
             </td>
         </tr>
     </table>
@@ -438,6 +443,7 @@
             </div>
         </div>
     </div>
+
     <!-- View Test Results Modal -->
     <div class="modal fade" id="view-result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -510,6 +516,7 @@
             </div>
         </div>
     </div>
+
     <!-- Verify Evaluted Results Modal -->
     <div class="modal fade" id="view-evaluted-result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -785,6 +792,7 @@
             </div>
         </div>
     </div>
+
     <!-- Update Evaluated Test Results Modal -->
     <div class="modal fade" id="update-evaluated-result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -1698,6 +1706,78 @@
             </div>
         </div>
     </div>
+
+    <!-- Customer Feedback Modal -->
+    <div class="modal fade" id="customer-feedback" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Customer Survey and Comments for PT Round @{{questions.round_name}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form method="POST" enctype="multipart/form-data" v-on:submit.prevent="updateCustomerFeedback()" id="customer_feedback_form">
+                            <input type="hidden"  name="pt_id" :value="questions.pt_id"> 
+                            <input type="hidden" name="round_id" :value="questions.round_id" />
+                            <div class="col-md-12">
+                                <div v-for="(question, index) in questions.data">
+                                    <p>@{{parseInt(index) + 1}}. <strong>@{{ question.question }}</strong></p>
+                                    <div class="form-group row">
+                                        <label class="col-sm-1">&nbsp;</label>
+                                        <div class="col-sm-10">
+                                            <div v-if="question.question_type==0">
+                                                <input type="text" :name="'question_'+question.id" class="form-control" />
+                                            </div>
+                                            <div v-if="question.question_type==1" >
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" :value="1" :name="'question_'+question.id" />
+                                                    <label class="form-check-label"> Yes </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" :value="0" :name="'question_'+question.id" />
+                                                    <label class="form-check-label"> No </label>
+                                                </div>
+                                            </div>
+                                            <div v-if="question.question_type==2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" :value="4" :name="'question_'+question.id" />
+                                                    <label class="form-check-label"> Strongly Agree </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" :value="3" :name="'question_'+question.id" />
+                                                    <label class="form-check-label"> Agree </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" :value="2" :name="'question_'+question.id" />
+                                                    <label class="form-check-label"> Neither agree nor disagree </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" :value="1" :name="'question_'+question.id" />
+                                                    <label class="form-check-label"> Disagree </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" :value="0" :name="'question_'+question.id" />
+                                                    <label class="form-check-label"> Strongly disagree </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row col-sm-offset-5 col-sm-7">
+                                    <button class="btn btn-sm btn-success"><i class='fa fa-plus-circle'></i> Submit</button>
+                                    <button type="button" class="btn btn-sm btn-silver" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times-circle"></i> {!! trans('messages.cancel') !!}</span></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <style type="text/css">

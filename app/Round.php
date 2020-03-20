@@ -64,6 +64,17 @@ class Round extends Model
     {
          return $this->hasMany('App\Lot');
     }
+
+    /**
+    * Survey relationship
+    *
+    */
+    public function surveys()
+    {
+         return $this->hasMany('App\Survey');
+    }
+
+
   /**
   * Return round ID given the uid
   * @param $title the unique title of the round

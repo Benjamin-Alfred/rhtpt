@@ -154,7 +154,7 @@ class ResultController extends Controller
         }
 
         $resultsOrder = ['pt.id', 'users.first_name', 'users.uid'];
-        $results = $results->withTrashed()->orderBy($resultsOrder[$resultsOrderIndex])->paginate($items_per_page);
+        $results = $results->withTrashed()->orderBy('round_id', 'desc')->orderBy($resultsOrder[$resultsOrderIndex])->paginate($items_per_page);
 
         foreach($results as $result)
         {
@@ -174,6 +174,13 @@ class ResultController extends Controller
             }
 
             $result->user_role = Auth::user()->ru()->role_id;
+
+            $pt = Pt::find($result->id);
+            if(isset($pt)){
+                $result->has_feedback = $pt->surveyResponses()->count();
+            }else{
+                $result->has_feedback = 0;
+            }
         }
 
         $response = [

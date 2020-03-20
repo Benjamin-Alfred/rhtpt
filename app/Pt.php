@@ -117,4 +117,14 @@ class Pt extends Model
     {
         return $this->hasMany('App\AmendedPT');
     }
+
+    /**
+    * Survey Responses relationship
+    *
+    */
+    public function surveyResponses(){
+
+         return $this->hasMany('App\SurveyResponse');
+    }
+
 }

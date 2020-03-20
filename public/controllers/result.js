@@ -32,6 +32,7 @@ new Vue({
         round: '',
         rounds: [],
         roundsDone: [],
+        active_round: 0,
         results_order: '',
         resultsOrder: [{'id':'1', 'title':'Name'}, {'id': 0, 'title':'Submission Time'}, {'id':'2', 'title':'Tester ID'}],
         frmData: {},
@@ -77,6 +78,7 @@ new Vue({
                                     'wrong_algorithm': 'Wrong Algorithm', 
                                     'incomplete_results': 'Incomplete results'
                                 },
+        questions: [],
     },
 
     computed: {
@@ -287,6 +289,37 @@ new Vue({
             }, (response) => {
                 this.formErrors = response.data;
             });
+        },
+
+        enterFeedback: function(result){
+            //    Fetch the result using the id
+            if(!this.loading){
+                this.loading = true;
+                this.$http.get('/survey-responses/'+result.rnd+'/pt/'+result.id).then((response) => {
+                    this.questions = response.data;
+                    this.loading = false;
+                });
+            }
+            $("#customer-feedback").modal('show');
+        },
+
+        updateCustomerFeedback: function(){
+
+            let myForm = document.getElementById('customer_feedback_form');
+            let input = new FormData(myForm);
+
+            if(!this.loading){
+                this.loading = true;
+                this.$http.post('/survey-responses',input).then((response) => {
+                    this.loading = false;
+                    this.changePage(this.pagination.current_page);
+                    $("#customer-feedback").modal('hide');
+                    toastr.success('Customer Feedback Updated Successfully.', 'Success Alert', {timeOut: 10000});
+                }, (response) => {
+                    this.loading = false;
+                    this.formErrorsUpdate = response.data;
+                });
+            }
         },
 
         changePage: function (page) {
@@ -646,6 +679,7 @@ new Vue({
             this.$http.get('/userrole').then((response) => {
                 if(response.data){
                     this.role = response.data.role_id;
+                    this.active_round = response.data.active_round;
                     this.loadCounties();
                     if (this.role == 4) { //County Role
                         this.county = response.data.tier;
