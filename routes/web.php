@@ -112,6 +112,15 @@ Route::group(['middleware' => 'auth'], function()
     Route::resource('vueroles','RoleController');
     Route::any('vueroles/{id}/restore','RoleController@restore');
 
+    Route::get('survey', 'SurveyController@manageSurvey');
+    Route::resource('vuesurveys','SurveyController');
+    Route::any('vuesurveys/{id}/restore','SurveyController@restore');
+    Route::get('survey-question-types', function () {
+        return response(App\Survey::getQuestionTypes());
+    });
+    Route::get('survey-responses/{round}/pt/{pt_id}', 'SurveyController@getSurveyResponses');
+    Route::post('survey-responses', 'SurveyController@storeSurveyResponses');
+
     Route::get('option', 'OptionController@manageOption');
     Route::resource('vueoptions','OptionController');
     Route::any('vueoptions/{id}/restore','OptionController@restore');
