@@ -195,10 +195,22 @@ new Vue({
         },
 
         deleteResult: function(result){
-            this.$http.delete('/vueresults/'+result.id).then((response) => {
-                this.changePage(this.pagination.current_page);
-                toastr.success('Result Deleted Successfully.', 'Success Alert', {timeOut: 5000});
-            });
+            let that = this;
+            swal({
+              title: 'Are you sure?',
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Yes Delete it!',
+              cancelButtonText: 'No, Keep it!',
+              showCloseButton: true,
+              closeOnConfirm: false,
+              html: false
+            }, function() {
+                that.$http.delete('/vueresults/'+result.id).then((response) => {
+                    that.changePage(that.pagination.current_page);
+                    swal('Deleted', 'You successfully deleted this entry.', 'success')
+                });
+            })
         },
 
         restoreResult: function(result){

@@ -225,7 +225,7 @@
                 <button  v-if="result.panel_status==0" class="btn btn-sm btn-primary" @click.prevent="editResult(result)" ><i class="fa fa-edit"></i> Edit</button>
             @endpermission
             @permission('delete-result')
-                <button class="btn btn-sm btn-danger" style="display: none;" @click.prevent="deleteResult(result)"><i class="fa fa-power-off"></i> Disable</button>
+                <button v-if="result.rnd==active_round" class="btn btn-sm btn-danger" @click.prevent="deleteResult(result)"><i class="fa fa-power-off"></i> Delete </button>
             @endpermission 
 
             @permission('verify-result')
@@ -238,7 +238,7 @@
              <a v-if="result.panel_status==3 && result.feedback !=null && result.download_status ==1" class="btn btn-sm btn-concrete" :href="'print_result/' +result.id + '?type=' + result.feedback"><i class="fa fa-print"></i> Print Again</a>
             @endpermission 
             @permission('create-customer-survey-response') 
-                <button  v-if="result.rnd==active_round && result.has_feedback==0" 
+                <button v-if="result.rnd==active_round && result.has_feedback==0" 
                     class="btn btn-sm btn-info" @click.prevent="enterFeedback(result)" >
                         <i class="fa fa-user"></i> Customer Survey</button>
             @endpermission 
