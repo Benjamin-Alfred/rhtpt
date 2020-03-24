@@ -482,19 +482,19 @@ class Algorithm extends Command
      * @param  Test results, Final results
      * @return Incomplete Results.
      */
-     public function check_complete_results($pt_panel_1_test_1_results, $pt_panel_1_final_results, $pt_panel_2_test_1_results, $pt_panel_2_final_results, $pt_panel_3_test_1_results, $pt_panel_3_final_results, $pt_panel_4_test_1_results, $pt_panel_4_final_results, $pt_panel_5_test_1_results, $pt_panel_5_final_results, $pt_panel_6_test_1_results, $pt_panel_6_final_results)
+     public function check_complete_results($panel1Test1, $panel1Final, $panel2Test1, $panel2Final, $panel3Test1, $panel3Final, $panel4Test1, $panel4Final, $panel5Test1, $panel5Final, $panel6Test1, $panel6Final)
      {
          $incomplete_results = 0;
          $reactive = Option::idByTitle('Reactive');
          $non_reactive = Option::idByTitle('Non Reactive');
          $not_done = Option::idByTitle('Not Done');
          if(
-             ((($pt_panel_1_test_1_results == $reactive) || ($pt_panel_1_final_results == $non_reactive)) && ($pt_panel_1_final_results === NULL || ($pt_panel_1_final_results == $not_done))) ||
-             ((($pt_panel_2_test_1_results == $reactive) || ($pt_panel_2_final_results == $non_reactive)) && ($pt_panel_2_final_results === NULL || ($pt_panel_2_final_results == $not_done))) ||
-             ((($pt_panel_3_test_1_results == $reactive) || ($pt_panel_3_final_results == $non_reactive)) && ($pt_panel_3_final_results === NULL || ($pt_panel_3_final_results == $not_done))) ||
-             ((($pt_panel_4_test_1_results == $reactive) || ($pt_panel_4_final_results == $non_reactive)) && ($pt_panel_4_final_results === NULL || ($pt_panel_4_final_results == $not_done))) ||
-             ((($pt_panel_5_test_1_results == $reactive) || ($pt_panel_5_final_results == $non_reactive)) && ($pt_panel_5_final_results === NULL || ($pt_panel_5_final_results == $not_done))) ||
-             ((($pt_panel_6_test_1_results == $reactive) || ($pt_panel_6_final_results == $non_reactive)) && ($pt_panel_6_final_results === NULL || ($pt_panel_6_final_results == $not_done)))
+             (($panel1Test1 == $reactive || $panel1Final == $non_reactive) && (empty($panel1Final) || $panel1Final == $not_done)) ||
+             (($panel2Test1 == $reactive || $panel2Final == $non_reactive) && (empty($panel2Final) || $panel2Final == $not_done)) ||
+             (($panel3Test1 == $reactive || $panel3Final == $non_reactive) && (empty($panel3Final) || $panel3Final == $not_done)) ||
+             (($panel4Test1 == $reactive || $panel4Final == $non_reactive) && (empty($panel4Final) || $panel4Final == $not_done)) ||
+             (($panel5Test1 == $reactive || $panel5Final == $non_reactive) && (empty($panel5Final) || $panel5Final == $not_done)) ||
+             (($panel6Test1 == $reactive || $panel6Final == $non_reactive) && (empty($panel6Final) || $panel6Final == $not_done))
          )
             $incomplete_results = 1;
          return $incomplete_results;
@@ -505,23 +505,32 @@ class Algorithm extends Command
      * @param  $date_pt_panel_received, $date_consituted, $date_pt_panel_tested
      * @return Incorrect results.
      */
-     public function check_correct_results($panel1Final, $panel2Final, $panel3Final, $panel4Final, $panel5Final, $panel6Final, $expectedResult1, $expectedResult2, $expectedResult3, $expectedResult4, $expectedResult5, $expectedResult6)
-     {
+    public function check_correct_results($panel1Final, $panel2Final, $panel3Final, $panel4Final, $panel5Final, $panel6Final, $expectedResult1, $expectedResult2, $expectedResult3, $expectedResult4, $expectedResult5, $expectedResult6)
+    {
          // Check correctness
-         $incorrectResults = 1;
-         $either = Option::idByTitle('Either'); //Added to resolve Round 19 evaluation problems
+        $incorrectResults = 1;
+        $either = Option::idByTitle('Either'); //Added to resolve Round 19 evaluation problems
+        $reactive = Option::idByTitle('Reactive');
+        $nonReactive = Option::idByTitle('Non Reactive');
+        $inconclusive = Option::idByTitle('Inconclusive');
 
-         if(
-            ($panel1Final == $expectedResult1 || $expectedResult1 == $either) &&
-            ($panel2Final == $expectedResult2 || $expectedResult2 == $either) &&
-            ($panel3Final == $expectedResult3 || $expectedResult3 == $either) &&
-            ($panel4Final == $expectedResult4 || $expectedResult4 == $either) &&
-            ($panel5Final == $expectedResult5 || $expectedResult5 == $either) &&
-            ($panel6Final == $expectedResult6 || $expectedResult6 == $either)
-         )
+        if(
+            ($panel1Final == $expectedResult1 || ($expectedResult1 == $either && ($panel1Final == $reactive || 
+                $panel1Final == $nonReactive || $panel1Final == $inconclusive))) &&
+            ($panel2Final == $expectedResult2 || ($expectedResult2 == $either && ($panel2Final == $reactive || 
+                $panel2Final == $nonReactive || $panel2Final == $inconclusive))) &&
+            ($panel3Final == $expectedResult3 || ($expectedResult3 == $either && ($panel3Final == $reactive || 
+                $panel3Final == $nonReactive || $panel3Final == $inconclusive))) &&
+            ($panel4Final == $expectedResult4 || ($expectedResult4 == $either && ($panel4Final == $reactive || 
+                $panel4Final == $nonReactive || $panel4Final == $inconclusive))) &&
+            ($panel5Final == $expectedResult5 || ($expectedResult5 == $either && ($panel5Final == $reactive || 
+                $panel5Final == $nonReactive || $panel5Final == $inconclusive))) &&
+            ($panel6Final == $expectedResult6 || ($expectedResult6 == $either && ($panel6Final == $reactive || 
+                $panel6Final == $nonReactive || $panel6Final == $inconclusive)))
+        )
             $incorrectResults = 0;
          return $incorrectResults;
-     }
+    }
     /**
      * Function to check if results satisfactory
      *
@@ -577,7 +586,7 @@ class Algorithm extends Command
 
         // For each panel:
         // If test 1 is "non reactive", test 2 should be "not done" and the final result should be "non reactive"
-        // Or If test 1 is "reactive", test 2 should not be "not done" and the final result should be "reactive", "non reactive" or "inconclusive"
+        // Or If test 1 is "reactive", test 2 should not be "not done" and the final result should be "reactive" or "inconclusive"
         // Kit 1 should be "determine" or "bioline" and kit 2 should be "first response"
 
         if (!(($panel1Test1 == $nonReactive && $panel1Test2 == $notDone && $panel1Final == $negative) ||
@@ -616,7 +625,11 @@ class Algorithm extends Command
             $wrongAlgorithm[] = 1;
         }
 
-        if (!(($kit1 == $determine || $kit1 == $bioline) && $kit2 == $firstResponse)) {
+        if (!($kit1 == $determine || $kit1 == $bioline)) {
+            $wrongAlgorithm[] = 1;
+        }
+
+        if (($panel1Test1 == $reactive || $panel2Test1 == $reactive || $panel3Test1 == $reactive || $panel4Test1 == $reactive || $panel5Test1 == $reactive || $panel6Test1 == $reactive) && $kit2 != $firstResponse) {
             $wrongAlgorithm[] = 1;
         }
 
