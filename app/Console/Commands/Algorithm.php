@@ -510,23 +510,23 @@ class Algorithm extends Command
          // Check correctness
         $incorrectResults = 1;
         $either = Option::idByTitle('Either'); //Added to resolve Round 19 evaluation problems
-        $reactive = Option::idByTitle('Reactive');
-        $nonReactive = Option::idByTitle('Non Reactive');
+        $positive = Option::idByTitle('Positive');
+        $negative = Option::idByTitle('Negative');
         $inconclusive = Option::idByTitle('Inconclusive');
 
         if(
-            ($panel1Final == $expectedResult1 || ($expectedResult1 == $either && ($panel1Final == $reactive || 
-                $panel1Final == $nonReactive || $panel1Final == $inconclusive))) &&
-            ($panel2Final == $expectedResult2 || ($expectedResult2 == $either && ($panel2Final == $reactive || 
-                $panel2Final == $nonReactive || $panel2Final == $inconclusive))) &&
-            ($panel3Final == $expectedResult3 || ($expectedResult3 == $either && ($panel3Final == $reactive || 
-                $panel3Final == $nonReactive || $panel3Final == $inconclusive))) &&
-            ($panel4Final == $expectedResult4 || ($expectedResult4 == $either && ($panel4Final == $reactive || 
-                $panel4Final == $nonReactive || $panel4Final == $inconclusive))) &&
-            ($panel5Final == $expectedResult5 || ($expectedResult5 == $either && ($panel5Final == $reactive || 
-                $panel5Final == $nonReactive || $panel5Final == $inconclusive))) &&
-            ($panel6Final == $expectedResult6 || ($expectedResult6 == $either && ($panel6Final == $reactive || 
-                $panel6Final == $nonReactive || $panel6Final == $inconclusive)))
+            ($panel1Final == $expectedResult1 || ($expectedResult1 == $either && ($panel1Final == $positive ||
+                $panel1Final == $negative || $panel1Final == $inconclusive))) &&
+            ($panel2Final == $expectedResult2 || ($expectedResult2 == $either && ($panel2Final == $positive ||
+                $panel2Final == $negative || $panel2Final == $inconclusive))) &&
+            ($panel3Final == $expectedResult3 || ($expectedResult3 == $either && ($panel3Final == $positive ||
+                $panel3Final == $negative || $panel3Final == $inconclusive))) &&
+            ($panel4Final == $expectedResult4 || ($expectedResult4 == $either && ($panel4Final == $positive ||
+                $panel4Final == $negative || $panel4Final == $inconclusive))) &&
+            ($panel5Final == $expectedResult5 || ($expectedResult5 == $either && ($panel5Final == $positive ||
+                $panel5Final == $negative || $panel5Final == $inconclusive))) &&
+            ($panel6Final == $expectedResult6 || ($expectedResult6 == $either && ($panel6Final == $positive ||
+                $panel6Final == $negative || $panel6Final == $inconclusive)))
         )
             $incorrectResults = 0;
          return $incorrectResults;
