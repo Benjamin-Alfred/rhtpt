@@ -461,6 +461,7 @@ class ResultController extends Controller
         $pt = Pt::find($id);
         if($pt && $pt->panel_status != 3){
             $pt->enrolment->status = 0;
+            $pt->enrolment->tester_id = $pt->enrolment->user_id;
             $pt->enrolment->save();
             $pt->delete();
         }
@@ -715,55 +716,79 @@ class ResultController extends Controller
         $sample_5 = "PT-".$round->name."-S5";
         $sample_6 = "PT-".$round->name."-S6";
 
-        \Log::info("Enrolment: ".json_encode($pt->enrolment));
         $user = $pt->enrolment->user()->withTrashed()->first();
         $performer = $pt->enrolment->performer()->withTrashed()->first();
-        \Log::info("Tester: ".json_encode($performer));
-        \Log::info("Panel owner: ".json_encode($user));
 
         $lot = User::lot($round_id, $user->uid);
         $expected_results = $lot->panels()->get();
+        $reactive = Option::idByTitle('Reactive');
+        $positive = "POSITIVE";
+        $negative = "NEGATIVE";
 
         foreach ($expected_results as $ex_rslts) {
 
             if($ex_rslts->panel == 1){
-                if($ex_rslts->result == Expected::EITHER)
-                    $expected_result_1 = $pt_panel_1_final_results;
-                else
+                if($ex_rslts->result == Expected::EITHER){
+                    if(Option::idByTitle($pt_panel_1_kit1_results) == $reactive){
+                        $expected_result_1 = $positive;
+                    }else{
+                        $expected_result_1 = $negative;
+                    }
+                }else
                     $expected_result_1 = $ex_rslts->result($ex_rslts->result);
             }
 
             if($ex_rslts->panel == 2){
                 if($ex_rslts->result == Expected::EITHER)
-                    $expected_result_2 = $pt_panel_2_final_results;
+                    if(Option::idByTitle($pt_panel_2_kit1_results) == $reactive){
+                        $expected_result_2 = $positive;
+                    }else{
+                        $expected_result_2 = $negative;
+                    }
                 else
                     $expected_result_2 = $ex_rslts->result($ex_rslts->result);
             }
 
             if($ex_rslts->panel == 3){
                 if($ex_rslts->result == Expected::EITHER)
-                    $expected_result_3 = $pt_panel_3_final_results;
+                    if(Option::idByTitle($pt_panel_3_kit1_results) == $reactive){
+                        $expected_result_3 = $positive;
+                    }else{
+                        $expected_result_3 = $negative;
+                    }
                 else
                     $expected_result_3 = $ex_rslts->result($ex_rslts->result);
             }
 
             if($ex_rslts->panel == 4){
                 if($ex_rslts->result == Expected::EITHER)
-                    $expected_result_4 = $pt_panel_4_final_results;
+                    if(Option::idByTitle($pt_panel_4_kit1_results) == $reactive){
+                        $expected_result_4 = $positive;
+                    }else{
+                        $expected_result_4 = $negative;
+                    }
                 else
                     $expected_result_4 = $ex_rslts->result($ex_rslts->result);
             }
 
             if($ex_rslts->panel == 5){
                 if($ex_rslts->result == Expected::EITHER)
-                    $expected_result_5 = $pt_panel_5_final_results;
+                    if(Option::idByTitle($pt_panel_5_kit1_results) == $reactive){
+                        $expected_result_5 = $positive;
+                    }else{
+                        $expected_result_5 = $negative;
+                    }
                 else
                     $expected_result_5 = $ex_rslts->result($ex_rslts->result);
             }
 
             if($ex_rslts->panel == 6){
                 if($ex_rslts->result == Expected::EITHER)
-                    $expected_result_6 = $pt_panel_6_final_results;
+                    if(Option::idByTitle($pt_panel_6_kit1_results) == $reactive){
+                        $expected_result_6 = $positive;
+                    }else{
+                        $expected_result_6 = $negative;
+                    }
                 else
                     $expected_result_6 = $ex_rslts->result($ex_rslts->result);
             }
