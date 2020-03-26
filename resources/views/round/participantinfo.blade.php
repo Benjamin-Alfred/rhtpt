@@ -37,7 +37,7 @@
                     <div v-if = "role == 1 || role == 3" class="col-sm-3">
                         <label class="col-sm-4 form-control-label" for="title">Counties:</label>
                         <div class="col-sm-6">
-                            <select class="form-control" name="county" id="county_id" @change="fetchSubs()" v-model="county">
+                            <select class="form-control" name="county" id="county_id" @change="loadSubcounties" v-model="county">
                                 <option selected></option>
                                <option v-for="county in counties" :value="county.id">@{{ county.value }}</option>                         
                             </select>
@@ -46,9 +46,9 @@
                     <div v-if = "role == 1 || role == 3 || role == 4" class="col-sm-3">
                         <label class="col-sm-4 form-control-label" for="title">Sub Counties:</label>
                         <div class="col-sm-8">
-                            <select class="form-control" name="sub_county" id="sub_id" @change="fetchFacilities" v-model="sub_county">
+                            <select class="form-control" name="sub_county" id="sub_id" @change="loadFacilities" v-model="sub_county">
                                 <option selected></option>
-                               <option  v-for="sub in subs" :value="sub.id">@{{ sub.value }}</option>                         
+                               <option  v-for="sub in subcounties" :value="sub.id">@{{ sub.value }}</option>                         
                             </select>
                         </div>
                     </div>

@@ -28,6 +28,7 @@ new Vue({
         role: '',
         tier: '',
         counties: [],
+        subcounties: [],
         subs: [],
         facilities: [],        
         roundId:'',
@@ -58,8 +59,8 @@ new Vue({
         }
     },
     mounted : function(){
-    	this.getParticipants(this.pagination.current_page);
         this.getRole();
+    	this.getParticipants(this.pagination.current_page);
     },
 
     methods : {  
@@ -71,22 +72,22 @@ new Vue({
                     this.roundId = round_id;
                     this.tier = response.data.data.tier;
                     this.pagination = response.data.data;
-                    if (this.role == 4) {
-                        let id = this.tier;
-                        this.$http.get('/subs/'+id).then((response) => {
-                            this.subs = response.data;
-                        }, (response) => {
-                            // console.log(response);
-                        });
-                    }
-                    if (this.role == 7) {
-                        let id =this.tier;
-                        this.$http.get('/fclts/'+id).then((response) => {
-                            this.facilities = response.data;
-                        }, (response) => {
-                            // console.log(response);
-                        });
-                    }
+                    // if (this.role == 4) {
+                    //     let id = this.tier;
+                    //     this.$http.get('/subs/'+id).then((response) => {
+                    //         this.subs = response.data;
+                    //     }, (response) => {
+                    //         // console.log(response);
+                    //     });
+                    // }
+                    // if (this.role == 7) {
+                    //     let id =this.tier;
+                    //     this.$http.get('/fclts/'+id).then((response) => {
+                    //         this.facilities = response.data;
+                    //     }, (response) => {
+                    //         // console.log(response);
+                    //     });
+                    // }
                 }
                 else
                 {
@@ -237,6 +238,24 @@ new Vue({
             }, (response) => {
             });
         },        
+        // Populate subcounties from FacilityController
+        loadSubcounties: function() {
+            this.sub_county = "";
+            this.facility = "";
+            this.$http.get('/subs/'+ this.county).then((response) => { 
+                this.subcounties = response.data;
+            }, (response) => {
+            });
+        }, 
+
+        // Populate facilities from FacilityController
+        loadFacilities: function() {
+            this.facility = "";
+            this.$http.get('/fclts/' + this.sub_county).then((response) => { 
+                this.facilities = response.data;
+            }, (response) => {
+            });
+        },
         // fetch subcounties in after selecting a county
         fetchSubs: function() {
             let id = $('#county_id').val();
