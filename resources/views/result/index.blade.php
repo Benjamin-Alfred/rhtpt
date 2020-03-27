@@ -234,8 +234,8 @@
             @endpermission
 	   
 	       @permission('print-results') 
-            <a v-if="result.panel_status==3 && result.feedback !=null && result.download_status ==0" class="btn btn-sm btn-wisteria" :href="'print_result/' +result.id + '?type=' + result.feedback"><i class="fa fa-print"></i> Print</a>
-             <a v-if="result.panel_status==3 && result.feedback !=null && result.download_status ==1" class="btn btn-sm btn-concrete" :href="'print_result/' +result.id + '?type=' + result.feedback"><i class="fa fa-print"></i> Print Again</a>
+            <a v-if="result.panel_status==3 && result.feedback !=null && result.download_status ==0" class="btn btn-sm btn-wisteria" :href="'print_result/' +result.id + '?type=' + result.feedback"><i class="fa fa-print"></i> Download</a>
+             <a v-if="result.panel_status==3 && result.feedback !=null && result.download_status ==1" class="btn btn-sm btn-concrete" :href="'print_result/' +result.id + '?type=' + result.feedback"><i class="fa fa-print"></i> Download</a>
             @endpermission 
             @permission('create-customer-survey-response') 
                 <button v-if="result.rnd==active_round && result.has_feedback==0" 
