@@ -448,31 +448,35 @@ class Algorithm extends Command
     /**
      * Function to completeness of HIV test kits info
      *
-     * @param  $test_1_kit_name, $test_2_kit_name, $test_1_kit_lot_no, $test_2_kit_lot_no, $test_1_expiry_date, $test_2_expiry_date
+     * @param  $test_1_kit_name, $test_2_kit_name, $test_1_kit_lot_no, $test_2_kit_lot_no, $test_1_expiry_date, $test_2_expiry_date, $test_kit_2_required
      * @return Incomplete kit data.
      */
-     public function check_kit_info($test_1_kit_name, $test_2_kit_name, $test_1_kit_lot_no, $test_2_kit_lot_no, $test_1_expiry_date, $test_2_expiry_date)
+     public function check_kit_info($test_1_kit_name, $test_2_kit_name, $test_1_kit_lot_no, $test_2_kit_lot_no, $test_1_expiry_date, $test_2_expiry_date, $test_kit_2_required = false)
      {
          // Check kit info
          $incomplete_kit_info = 0;
-         if(empty($test_1_kit_name) || empty($test_2_kit_name) || empty($test_1_kit_lot_no) || empty($test_2_kit_lot_no) || empty($test_1_expiry_date) || empty($test_2_expiry_date))
+         if(empty($test_1_kit_name) || empty($test_1_kit_lot_no) || empty($test_1_expiry_date))
+             $incomplete_kit_info = 1;
+         if($test_kit_2_required && (empty($test_2_kit_name) || empty($test_2_kit_lot_no) || empty($test_2_expiry_date)))
              $incomplete_kit_info = 1;
          return $incomplete_kit_info;
      }
     /**
      * Function to check kit expiry against date tested
      *
-     * @param  $date_pt_panel_tested, $date_consituted, $date_pt_panel_tested
-     * @return Deviation from procedure.
+     * @param  $date_pt_panel_tested, $date_consituted, $date_pt_panel_tested, $test_kit_2_required
+     * @return $use_of_expired_kits.
      */
-     public function check_expiry($date_pt_panel_tested, $test_1_expiry_date, $test_2_expiry_date, $test_3_expiry_date)
+     public function check_expiry($date_pt_panel_tested, $test_1_expiry_date, $test_2_expiry_date, $test_3_expiry_date, $test_kit_2_required)
      {
          $use_of_expired_kits = 0;
          $dt_tested = Carbon::parse($date_pt_panel_tested);
          $dt_1_expiry = Carbon::parse($test_1_expiry_date);
          $dt_2_expiry = Carbon::parse($test_2_expiry_date);
          $dt_3_expiry = Carbon::parse($test_3_expiry_date);
-         if($dt_tested->gt($dt_1_expiry) || $dt_tested->gt($dt_2_expiry) || $dt_tested->gt($dt_3_expiry))
+         if($dt_tested->gt($dt_1_expiry))
+            $use_of_expired_kits = 1;
+         if($test_kit_2_required && $dt_tested->gt($dt_2_expiry))
             $use_of_expired_kits = 1;
          return $use_of_expired_kits;
      }
@@ -551,10 +555,10 @@ class Algorithm extends Command
      * @return Invalid results.
      */
      public function check_validity($pt_panel_1_test_1_results, $pt_panel_1_test_2_results, $pt_panel_1_test_3_results, $pt_panel_1_final_results, $pt_panel_2_test_1_results, $pt_panel_2_test_2_results, $pt_panel_2_test_3_results, $pt_panel_2_final_results, $pt_panel_3_test_1_results, $pt_panel_3_test_2_results, $pt_panel_3_test_3_results, $pt_panel_3_final_results, $pt_panel_4_test_1_results, $pt_panel_4_test_2_results, $pt_panel_4_test_3_results, $pt_panel_4_final_results, $pt_panel_5_test_1_results, $pt_panel_5_test_2_results, $pt_panel_5_test_3_results, $pt_panel_5_final_results, $pt_panel_6_test_1_results, $pt_panel_6_test_2_results, $pt_panel_6_test_3_results, $pt_panel_6_final_results)
-     {
-         $invalid_results = 0;
-         $invalid = Option::idByTitle('Invalid');
-         if(
+    {
+        $invalid_results = 0;
+        $invalid = Option::idByTitle('Invalid');
+        if(
              ($pt_panel_1_test_1_results == $invalid || $pt_panel_1_test_2_results == $invalid || $pt_panel_1_test_3_results == $invalid || $pt_panel_1_final_results == $invalid) || 
              ($pt_panel_2_test_1_results == $invalid || $pt_panel_2_test_2_results == $invalid || $pt_panel_2_test_3_results == $invalid || $pt_panel_2_final_results == $invalid) || 
              ($pt_panel_3_test_1_results == $invalid || $pt_panel_3_test_2_results == $invalid || $pt_panel_3_test_3_results == $invalid || $pt_panel_3_final_results == $invalid) || 
@@ -564,7 +568,7 @@ class Algorithm extends Command
         )
             $invalid_results = 1;
          return $invalid_results;
-     }
+    }
     /**
      * Function to check if algorithm followed
      *
@@ -654,6 +658,7 @@ class Algorithm extends Command
      */
      public function runAlgorithm($pts)
      {
+        $reactive = Option::idByTitle('Reactive');
         foreach($pts as $pt)
         {
             //  Fetch expected results
@@ -807,12 +812,12 @@ class Algorithm extends Command
                     if($rss->field_id == Field::idByUID('PT Panel 6 Final Results'))
                         $pt_panel_6_final_results = $rss->response;
                 }
+                $test_kit_2_required = ($pt_panel_1_test_1_results == $reactive || $pt_panel_2_test_1_results == $reactive || $pt_panel_3_test_1_results == $reactive || $pt_panel_4_test_1_results == $reactive || $pt_panel_5_test_1_results == $reactive || $pt_panel_6_test_1_results == $reactive);
                 //  Fetch expected results
-                
                 $dev_from_procedure = $this->check_dates($date_pt_panel_received, $date_pt_panel_constituted, $date_pt_panel_tested, $date_panels_shipped);
                 $incomplete_other_info = $this->check_other_info($date_pt_panel_received, $date_pt_panel_constituted, $date_pt_panel_tested);
-                $incomplete_kit_info = $this->check_kit_info($test_1_kit_name, $test_2_kit_name, $test_1_kit_lot_no, $test_2_kit_lot_no, $test_1_expiry_date, $test_2_expiry_date);
-                $use_of_expired_kits = $this->check_expiry($date_pt_panel_tested, $test_1_expiry_date, $test_2_expiry_date, $test_2_expiry_date); //We are only using 2 test kits - $test_3_expiry_date shouldn't be here
+                $incomplete_kit_info = $this->check_kit_info($test_1_kit_name, $test_2_kit_name, $test_1_kit_lot_no, $test_2_kit_lot_no, $test_1_expiry_date, $test_2_expiry_date, $test_kit_2_required);
+                $use_of_expired_kits = $this->check_expiry($date_pt_panel_tested, $test_1_expiry_date, $test_2_expiry_date, $test_2_expiry_date, $test_kit_2_required);
                 $incomplete_results = $this->check_complete_results($pt_panel_1_test_1_results, $pt_panel_1_final_results, $pt_panel_2_test_1_results, $pt_panel_2_final_results, $pt_panel_3_test_1_results, $pt_panel_3_final_results, $pt_panel_4_test_1_results, $pt_panel_4_final_results, $pt_panel_5_test_1_results, $pt_panel_5_final_results, $pt_panel_6_test_1_results, $pt_panel_6_final_results);
                 $incorrect_results = $this->check_correct_results($pt_panel_1_final_results, $pt_panel_2_final_results, $pt_panel_3_final_results, $pt_panel_4_final_results, $pt_panel_5_final_results, $pt_panel_6_final_results,  $expectedResult1ID, $expectedResult2ID, $expectedResult3ID, $expectedResult4ID, $expectedResult5ID, $expectedResult6ID);
                 $unsatisfactory = $this->check_satisfaction($incorrect_results);
