@@ -145,7 +145,7 @@ class ResultController extends Controller
                 case 2: $failureReason = 'pt.wrong_algorithm'; break;
                 case 3: $failureReason = 'pt.use_of_expired_kits'; break;
                 case 4: $failureReason = 'pt.incomplete_kit_data'; break;
-                case 5: $failureReason = 'pt.incorrect_results'; break;
+                case 5: $failureReason = 'pt.incomplete_results'; break;
                 case 6: $failureReason = 'pt.dev_from_procedure'; break;
                 case 7: $failureReason = 'pt.incomplete_other_information'; break;
             }
