@@ -574,10 +574,12 @@ class ResultController extends Controller
         $pt_panel_6_kit2_results = '';
 
         $determine = '';
+        $determine_value = '';
         $determine_lot_no = '';
         $determine_expiry_date = '';
 
         $firstresponse = '';
+        $firstresponse_value = '';
         $firstresponse_lot_no = '';
         $firstresponse_expiry_date = '';
 
