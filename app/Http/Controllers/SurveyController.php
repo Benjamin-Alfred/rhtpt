@@ -10,6 +10,7 @@ use App\User;
 use App\Round;
 
 use Auth;
+use DB;
 use Jenssegers\Date\Date as Carbon;
 
 class SurveyController extends Controller
@@ -27,23 +28,34 @@ class SurveyController extends Controller
      */
     public function index(Request $request)
     {
+        $ITEM_COUNT = 10;
         $error = ['error' => 'No results found, please try with different keywords.'];
-        $surveys = Survey::with('round')->latest()->withTrashed()->paginate(5);
-        if($request->has('q')) 
-        {
-            $search = $request->get('q');
-            $surveys = Survey::where('question', 'LIKE', "%{$search}%")->latest()->withTrashed()->paginate(5);
-        }
+        $pagination = [];
 
-        $response = [
-            'pagination' => [
+        if($request->has('round_id')) 
+        {
+            $roundID = $request->get('round_id');
+            $surveys = Survey::where('round_id', $roundID)->get();
+        }else {
+            if($request->has('q')){
+                $search = $request->get('q');
+                $surveys = Survey::where('question', 'LIKE', "%{$search}%")->latest()->withTrashed()->paginate($ITEM_COUNT);
+            }else{
+                $surveys = Survey::with('round')->latest()->withTrashed()->paginate($ITEM_COUNT);
+            }
+
+            $pagination = [
                 'total' => $surveys->total(),
                 'per_page' => $surveys->perPage(),
                 'current_page' => $surveys->currentPage(),
                 'last_page' => $surveys->lastPage(),
                 'from' => $surveys->firstItem(),
                 'to' => $surveys->lastItem()
-            ],
+            ];
+        }
+
+        $response = [
+            'pagination' => $pagination,
             'data' => $surveys
         ];
 
@@ -167,4 +179,68 @@ class SurveyController extends Controller
         return $surveyResponses->count() > 0 ? response()->json(['replies' => $surveyResponses->count()]) : $error;
     }
 
+    public function viewSurveyResponses(){
+
+        return view('report.customersurveyresponses');
+    }
+
+    /**
+     * Get answers to survey questions.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getSurveyResponsesData(Request $request){
+
+        $ITEMS_PER_PAGE = 50;
+        $error = ['error' => 'No response found, please try with different filters.'];
+        $tier = Auth::user()->ru()->tier;
+
+        $data = DB::table('enrolments')
+                    ->join('users', 'enrolments.tester_id', '=', 'users.id')
+                    ->join('rounds', 'enrolments.round_id', '=', 'rounds.id')
+                    ->join('facilities', 'enrolments.facility_id', '=', 'facilities.id')
+                    ->join('sub_counties', 'facilities.sub_county_id', '=', 'sub_counties.id')
+                    ->join('counties', 'sub_counties.county_id', '=', 'counties.id')
+                    ->join('pt', 'enrolments.id', '=', 'pt.enrolment_id')
+                    ->join('surveys', 'enrolments.round_id', '=', 'surveys.round_id')
+                    ->join('survey_responses', function($join){
+                        $join->on('pt.id', '=', 'survey_responses.pt_id')
+                            ->on('surveys.id', '=', 'survey_responses.survey_id');
+                    });
+
+        if($request->has('round')) $data = $data->where('rounds.id', '=', $request->get('round'));
+        if($request->has('county')) $data = $data->where('counties.id', '=', $request->get('county'));
+        if($request->has('subcounty')) $data = $data->where('sub_counties.id', '=', $request->get('subcounty'));
+        if($request->has('facility')) $data = $data->where('facilities.id', '=', $request->get('facility'));
+        if($request->has('question')) $data = $data->where('surveys.id', '=', $request->get('question'));
+
+        if(Auth::user()->isCountyCoordinator()) $data = $data->where('counties.id', '=', $tier);
+        if(Auth::user()->isSubCountyCoordinator()) $data = $data->where('sub_counties.id', '=', $tier);
+
+        $data = $data->selectRaw('counties.name AS county, sub_counties.name AS subcounty, facilities.name AS facility, users.uid, survey_responses.pt_id, survey_responses.survey_id, surveys.question, surveys.question_type, survey_responses.response')
+                    ->orderBy('counties.name')
+                    ->orderBy('sub_counties.name');
+
+        $totalUsers = collect($data->pluck('pt_id'))->unique()->count();
+        $questions = collect($data->pluck('question', 'survey_id'))->unique();
+
+        $data = $data->paginate($ITEMS_PER_PAGE);
+
+        $response = [
+            'pagination' => [
+                'total' => $data->total(),
+                'per_page' => $data->perPage(),
+                'current_page' => $data->currentPage(),
+                'last_page' => $data->lastPage(),
+                'from' => $data->firstItem(),
+                'to' => $data->lastItem()
+            ],
+            'data' => $data,
+            'questions' => $questions,
+            'total_users' => $totalUsers
+        ];
+
+        return $data->count() > 0 ? response()->json($response) : $error;
+    }
 }

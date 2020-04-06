@@ -238,6 +238,10 @@
                                 <a href="{!! url('participantcounts') !!}"><i class="fa fa-bookmark"></i> 
                                 {!! trans_choice('messages.registration',1) . ' ' . trans_choice('messages.count',2) !!}</a>
                             </li>
+                            <li class="{!! Request::segment(1)=='material'?strtolower(trans('messages.active')):'' !!}">
+                                <a href="{!! url('vuesurveyresponses') !!}"><i class="fa fa-bookmark"></i> 
+                                Customer Survey Responses</a>
+                            </li>
                             @endpermission
                         </ul>
                     </li>
@@ -345,6 +349,8 @@
 
         @if(Request::segment(1)==strtolower('event'))
         <script src="{{ asset('controllers/event.js') }}"></script>
+        @elseif(Request::segment(1)==strtolower('vuesurveyresponses'))
+        <script src="{{ asset('controllers/surveyresponses.js') }}"></script>
         @elseif(Request::segment(1)==strtolower('survey'))
         <script src="{{ asset('controllers/survey.js') }}"></script>
         @elseif(Request::segment(1)==strtolower('role'))

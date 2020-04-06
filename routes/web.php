@@ -118,8 +118,13 @@ Route::group(['middleware' => 'auth'], function()
     Route::get('survey-question-types', function () {
         return response(App\Survey::getQuestionTypes());
     });
+    Route::post('/get-survey-questions/', 'SurveyController@index');
     Route::get('survey-responses/{round}/pt/{pt_id}', 'SurveyController@getSurveyResponses');
     Route::post('survey-responses', 'SurveyController@storeSurveyResponses');
+    Route::post('/get-survey-responses/', 'SurveyController@getSurveyResponsesData');
+    Route::get('/vuesurveyresponses', array(
+        "as" => "report.customersurveyresponses",
+        "uses" => "SurveyController@viewSurveyResponses"));
 
     Route::get('option', 'OptionController@manageOption');
     Route::resource('vueoptions','OptionController');
