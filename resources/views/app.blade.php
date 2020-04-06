@@ -238,6 +238,8 @@
                                 <a href="{!! url('participantcounts') !!}"><i class="fa fa-bookmark"></i> 
                                 {!! trans_choice('messages.registration',1) . ' ' . trans_choice('messages.count',2) !!}</a>
                             </li>
+                            @endpermission
+                            @permission('view-customer-survey-responses')
                             <li class="{!! Request::segment(1)=='material'?strtolower(trans('messages.active')):'' !!}">
                                 <a href="{!! url('vuesurveyresponses') !!}"><i class="fa fa-bookmark"></i> 
                                 Customer Survey Responses</a>
