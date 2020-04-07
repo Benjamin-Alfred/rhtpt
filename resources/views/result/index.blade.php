@@ -203,7 +203,8 @@
             <td>@{{ result.rnd }}</td>
             <td>@{{ result.uid }}</td>
             <td>@{{ result.tester }}</td>
-            <td>@{{ result.panel_id }}</td>
+            <td v-if="result.uid==result.panel_id">@{{ result.panel_id }}</td>
+            <td v-if="result.uid!=result.panel_id"><span class="label label-danger" title="Tested another user's panel">@{{ result.panel_id }}</span></td>
             <td>
                 <button v-if="result.panel_status==0" class="mbtn mbtn-raised mbtn-danger mbtn-xs">Not Checked</button>
                 <button v-if="result.panel_status==1" class="mbtn mbtn-raised mbtn-warning mbtn-xs">Submitted</button>
