@@ -335,7 +335,7 @@ class ResultController extends Controller
         //Get the currently active round
         $round = Round::where('end_date', '>', Carbon::today())
                                 ->where('start_date', '<', Carbon::today())->where('status', '=', 0)->first();
-        $tester = User::find($pt->enrolment->user_id)->uid;
+        $tester = User::withTrashed()->find($pt->enrolment->user_id)->uid;
         $results = $pt->results;
         $response = [
             'pt' => $pt,
