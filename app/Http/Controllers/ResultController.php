@@ -459,13 +459,15 @@ class ResultController extends Controller
     public function destroy($id)
     {
         $pt = Pt::find($id);
-        if($pt && $pt->panel_status != 3){
+        if($pt && ($pt->panel_status != 3 || ($pt->panel_status == 3 && $pt->enrolment->tester_id != $pt->enrolment->user_id))){
             $pt->enrolment->status = 0;
             $pt->enrolment->tester_id = $pt->enrolment->user_id;
             $pt->enrolment->save();
             $pt->delete();
+            \Log::info("Result entry PTID $id deleted by USER ID ". Auth::user()->id);
+        }else{
+            \Log::info("Failed attempt by USER ID ".Auth::user()->id." to delete result entry PTID $id");
         }
-        \Log::info("Result entry PTID $id deleted by USER ID ". Auth::user()->id);
         return response()->json(['done']);
     }
 
