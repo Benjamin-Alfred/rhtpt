@@ -27,13 +27,14 @@ class PanelController extends Controller
      */
     public function index(Request $request)
     {
+        $ITEMS_PER_PAGE = 30;
         $error = ['error' => 'No results found, please try with different keywords.'];
         $activeLots = Lot::pluck('id');
-        $panels = Panel::whereIn('lot_id', $activeLots)->latest()->withTrashed()->paginate(5);
+        $panels = Panel::whereIn('lot_id', $activeLots)->latest()->withTrashed()->paginate($ITEMS_PER_PAGE);
         if($request->has('q')) 
         {
             $search = $request->get('q');
-            $panels = Panel::whereIn('lot_id', $activeLots)->where('pt_id', 'LIKE', "%{$search}%")->latest()->withTrashed()->paginate(5);
+            $panels = Panel::whereIn('lot_id', $activeLots)->where('pt_id', 'LIKE', "%{$search}%")->latest()->withTrashed()->paginate($ITEMS_PER_PAGE);
         }
         foreach($panels as $panel)
         {
