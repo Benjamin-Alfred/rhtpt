@@ -120,7 +120,7 @@ class ResultController extends Controller
             if($lotID > 0){
                 $enrolments = $enrolments->join('lots', 'enrolments.round_id', 'lots.round_id')
                                 ->where('lots.lot', '=', $lotID)
-                                ->where(\DB::raw("lots.tester_id LIKE CONCAT('%', SUBSTR(users.uid, -1), '%') AND enrolments.deleted_at "));
+                                ->where(\DB::raw("lots.tester_id LIKE CONCAT('%', SUBSTR(panels.uid, -1), '%') AND enrolments.deleted_at "));
             }
 
             $results = $enrolments->join('pt','enrolments.id', '=', 'pt.enrolment_id')
