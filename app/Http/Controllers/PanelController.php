@@ -38,7 +38,7 @@ class PanelController extends Controller
         }
         foreach($panels as $panel)
         {
-            $panel->sample = $panel->panel_label;
+            $panel->panel_label = $panel->panel_label;
             $panel->rslt = $panel->result($panel->result);
             $panel->lt = $panel->lot->lt();
         }

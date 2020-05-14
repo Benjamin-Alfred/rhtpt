@@ -3,7 +3,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 class Panel extends Model
 {
-  	public $fillable = ['lot_id', 'panel', 'material_id', 'result', 'prepared_by', 'tested_by', 'user_id'];
+  	public $fillable = ['lot_id', 'panel', 'panel_label', 'material_id', 'result', 'prepared_by', 'tested_by', 'user_id'];
   	/**
   	 * Enabling soft deletes for items.
   	 *

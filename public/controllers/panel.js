@@ -22,8 +22,8 @@ new Vue({
         offset: 4,
         formErrors:{},
         formErrorsUpdate:{},
-        newPanel : {'lot_id':'','panel':'','material_id':'','result':'','prepared_by':'','tested_by':''},
-        fillPanel : {'lot_id':'','panel':'','material_id':'','result':'','prepared_by':'','tested_by':'','id':''},
+        newPanel : {'lot_id':'','panel':'','panel_label':'','material_id':'','result':'','prepared_by':'','tested_by':''},
+        fillPanel : {'lot_id':'','panel':'','panel_label':'','material_id':'','result':'','prepared_by':'','tested_by':'','id':''},
         materials: [],
         options: [],
         lots: [],
@@ -94,7 +94,7 @@ new Vue({
                 else
                 {
         		    this.changePage(this.pagination.current_page);
-          			this.newPanel = {'lot_id':'','panel':'','material_id':'','result':'','prepared_by':'','tested_by':''};
+          			this.newPanel = {'lot_id':'','panel':'','panel_label':'','material_id':'','result':'','prepared_by':'','tested_by':''};
           			$("#create-panel").modal('hide');
           			toastr.success('Panel Created Successfully.', 'Success Alert', {timeOut: 5000});
                 }
@@ -124,6 +124,7 @@ new Vue({
             this.fillPanel.id = panel.id;
             this.fillPanel.lot_id = panel.lot_id;
             this.fillPanel.panel = panel.panel;
+            this.fillPanel.panel_label = panel.panel_label;
             this.fillPanel.material_id = panel.material_id;
             this.fillPanel.prepared_by = panel.prepared_by;
             this.fillPanel.result = panel.result;
@@ -136,7 +137,7 @@ new Vue({
                 var input = this.fillPanel;
                 this.$http.put('/vuepanels/'+id,input).then((response) => {
                     this.changePage(this.pagination.current_page);
-                    this.fillPanel = {'lot_id':'','panel':'','material_id':'','result':'','prepared_by':'','tested_by':'', 'id':''};
+                    this.fillPanel = {'lot_id':'','panel':'','panel_label':'','material_id':'','result':'','prepared_by':'','tested_by':'', 'id':''};
                     $("#edit-panel").modal('hide');
                     toastr.success('Panel Updated Successfully.', 'Success Alert', {timeOut: 5000});
                 }, (response) => {
