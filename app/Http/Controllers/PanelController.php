@@ -38,7 +38,7 @@ class PanelController extends Controller
         }
         foreach($panels as $panel)
         {
-            $panel->sample = "PT-".$panel->lot->round->name."-S".$panel->panel;
+            $panel->sample = $panel->panel_label;
             $panel->rslt = $panel->result($panel->result);
             $panel->lt = $panel->lot->lt();
         }
@@ -75,6 +75,7 @@ class PanelController extends Controller
             $this->validate($request, [
             'lot_id' => 'required',
             'panel' => 'required',
+            'panel_label' => 'required',
             'material_id' => 'required',
             'result' => 'required',
             'prepared_by' => 'required',
@@ -100,6 +101,7 @@ class PanelController extends Controller
         $this->validate($request, [
             'lot_id' => 'required',
             'panel' => 'required',
+            'panel_label' => 'required',
             'material_id' => 'required',
             'result' => 'required',
             'prepared_by' => 'required',
