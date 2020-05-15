@@ -1,6 +1,7 @@
 <?php namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Jenssegers\Date\Date as Carbon;
 class Round extends Model
 {
 	public $fillable = ['name', 'description', 'start_date', 'end_date', 'user_id'];
@@ -122,6 +123,17 @@ class Round extends Model
 
       return $roundName;
   }
+    /**
+    * Return current round
+    */
+    public static function getCurrentRound()
+    {
+        $currentRound = Round::where('end_date', '>', Carbon::today())
+            ->where('start_date', '<', Carbon::today())
+            ->where('status', '=', 0)->first();
+
+        return $currentRound;
+    }
     /**
   	 * Constants for durations
   	 *

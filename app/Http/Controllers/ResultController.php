@@ -333,8 +333,7 @@ class ResultController extends Controller
     {
         $pt = Pt::find($id);
         //Get the currently active round
-        $round = Round::where('end_date', '>', Carbon::today())
-                                ->where('start_date', '<', Carbon::today())->where('status', '=', 0)->first();
+        $round = Round::getCurrentRound();
         $tester = User::withTrashed()->find($pt->enrolment->user_id)->uid;
         $results = $pt->results;
         $response = [
@@ -732,6 +731,7 @@ class ResultController extends Controller
         foreach ($expected_results as $ex_rslts) {
 
             if($ex_rslts->panel == 1){
+                $sample_1 = $ex_rslts->panel_label;
                 if($ex_rslts->result == Expected::EITHER){
                     if(Option::idByTitle($pt_panel_1_kit1_results) == $reactive){
                         $expected_result_1 = $positive;
@@ -743,6 +743,7 @@ class ResultController extends Controller
             }
 
             if($ex_rslts->panel == 2){
+                $sample_2 = $ex_rslts->panel_label;
                 if($ex_rslts->result == Expected::EITHER)
                     if(Option::idByTitle($pt_panel_2_kit1_results) == $reactive){
                         $expected_result_2 = $positive;
@@ -754,6 +755,7 @@ class ResultController extends Controller
             }
 
             if($ex_rslts->panel == 3){
+                $sample_3 = $ex_rslts->panel_label;
                 if($ex_rslts->result == Expected::EITHER)
                     if(Option::idByTitle($pt_panel_3_kit1_results) == $reactive){
                         $expected_result_3 = $positive;
@@ -765,6 +767,7 @@ class ResultController extends Controller
             }
 
             if($ex_rslts->panel == 4){
+                $sample_4 = $ex_rslts->panel_label;
                 if($ex_rslts->result == Expected::EITHER)
                     if(Option::idByTitle($pt_panel_4_kit1_results) == $reactive){
                         $expected_result_4 = $positive;
@@ -776,6 +779,7 @@ class ResultController extends Controller
             }
 
             if($ex_rslts->panel == 5){
+                $sample_5 = $ex_rslts->panel_label;
                 if($ex_rslts->result == Expected::EITHER)
                     if(Option::idByTitle($pt_panel_5_kit1_results) == $reactive){
                         $expected_result_5 = $positive;
@@ -787,6 +791,7 @@ class ResultController extends Controller
             }
 
             if($ex_rslts->panel == 6){
+                $sample_6 = $ex_rslts->panel_label;
                 if($ex_rslts->result == Expected::EITHER)
                     if(Option::idByTitle($pt_panel_6_kit1_results) == $reactive){
                         $expected_result_6 = $positive;

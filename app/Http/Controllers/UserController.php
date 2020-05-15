@@ -903,8 +903,7 @@ class UserController extends Controller
         //Get active/current round
         try {
             
-            $currentRound = Round::where('end_date', '>', Carbon::today())
-                        ->where('start_date', '<', Carbon::today())->where('status', '=', 0)->first();
+            $currentRound = Round::getCurrentRound();
 
             if($currentRound){
                 $activeRound = $currentRound->name;

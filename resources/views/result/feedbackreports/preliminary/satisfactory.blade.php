@@ -63,8 +63,8 @@
         <td style ="border:solid 1px black;" rowspan="2">Expected Results</td>
     </tr>
     <tr>
-        <th style ="border:solid 1px black;">Determine</th>
-        <th style ="border:solid 1px black;">First Response</th>
+        <th style ="border:solid 1px black;">{{$data['determine']}}<br>Kit Result</th>
+        <th style ="border:solid 1px black;">{{$data['firstresponse']}}<br>Kit Result</th>
         <th style ="border:solid 1px black;">Final Result</th>
     </tr>
     <tr>

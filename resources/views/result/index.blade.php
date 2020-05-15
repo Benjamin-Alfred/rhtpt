@@ -17,7 +17,8 @@
                 <h5>
                     <i class="fa fa-book"></i> {!! trans_choice('messages.result', 2) !!}
                     @permission('create-result')
-                        <button type="button" class="btn btn-sm btn-belize-hole" data-toggle="modal" data-target="#create-result">
+                        <button type="button" class="btn btn-sm btn-belize-hole" data-toggle="modal" data-target="#create-result"
+                        :disabled="active_round==0">
                             <i class="fa fa-plus-circle"></i>
                             {!! trans('messages.enter-result') !!}
                         </button>
@@ -618,8 +619,8 @@
                                    <table class="table table-bordered">
                                         <tr>
                                             <th>PT Sample ID</th>
-                                            <th>Determine</th>
-                                            <th>First Response</th>
+                                            <th>@{{evaluated_results.determine}} Kit Result</th>
+                                            <th>@{{evaluated_results.firstresponse}} Kit Result</th>
                                             <th>Final Result</th>
                                             <th>Expected Result</th>
                                         </tr>                                        
@@ -1060,13 +1061,13 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6">
-                                        <label class="form-control-label col-sm-5" for="determine_lot_no">Determine Lot Number</label>
+                                        <label class="form-control-label col-sm-5" for="determine_lot_no">Kit 1 Lot Number</label>
                                         <div class="col-sm-7">
                                             <input class="form-control" type="text" class="form-control" name="field_5" id="determine_lot_no" :value="evaluated_results.determine_lot_no">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <label class="form-control-label col-sm-5" for="firstresponse_lot_no">First Response Lot Number</label>
+                                        <label class="form-control-label col-sm-5" for="firstresponse_lot_no">Kit 2 Lot Number</label>
                                         <div class="col-sm-7">
                                             <input class="form-control" type="text" class="form-control" name="field_8" id="firstresponse_lot_no" :value="evaluated_results.firstresponse_lot_no">
                                         </div>
