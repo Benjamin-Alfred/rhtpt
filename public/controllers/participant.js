@@ -32,6 +32,7 @@ new Vue({
         transferUser : {'facility_id':'','program_id':'', 'id':''},
         loading: false,
         error: false,
+        no_mfl: false,
         query: '',
         facility: '',
         sub_county: '',
@@ -367,8 +368,23 @@ new Vue({
             // Set the loading property to true, this will display the "Searching..." button.
             this.loading = true;
 
+            let uri = '/api/search_participant?';
+
+            if(this.no_mfl) uri = uri + '&no_mfl=true';
+
+            if(this.query) uri = uri + '&q=' + this.query;
+
+            if(this.facility){
+                uri = uri + '&facility=' + this.facility;
+            }else if(this.sub_county){
+                uri = uri + '&sub_county=' + this.sub_county;
+            }else if(this.county){
+                uri = uri + '&county=' + this.county;
+            }
+
             // Making a get request to our API and passing the query to it.
-            this.$http.get('/api/search_participant?q=' + this.query).then((response) => {
+            //get users filtered by facility
+            this.$http.get(uri).then((response) => {
                 // If there was an error set the error message, if not fill the users array.
                 if(response.data.error)
                 {
@@ -383,147 +399,7 @@ new Vue({
                 }
                 // The request is finished, change the loading to false again.
                 this.loading = false;
-                // Clear the query.
-                this.query = '';
             });
-        },
-
-        filter: function() {
-            // Clear the error message.
-            this.error = '';
-            // Empty the users array so we can fill it with the new users.
-            this.users = [];
-            // Set the loading property to true, this will display the "Searching..." button.
-            this.loading = true;
-
-            // Making a get request to our API and passing the query to it.
-            this.$http.get('/api/search_participant?q=' + this.query).then((response) => {
-                // If there was an error set the error message, if not fill the users array.
-                if(response.data.error)
-                {
-                    this.error = response.data.error;
-                    toastr.error(this.error, 'Search Notification', {timeOut: 5000});
-                }
-                else
-                {
-                    this.users = response.data.data.data;
-                    this.pagination = response.data.pagination;
-                    toastr.success('The search results below were obtained.', 'Search Notification', {timeOut: 5000});
-                }
-                // The request is finished, change the loading to false again.
-                this.loading = false;
-                // Clear the query.
-                this.query = '';
-            });
-        },
-        no_mfl: function() {
-            // Clear the error message.
-            this.error = '';
-            // Empty the users array so we can fill it with the new users.
-            this.users = [];
-            // Set the loading property to true, this will display the "Searching..." button.
-            this.loading = true;
-
-            // Making a get request to our API and passing the query to it.
-            this.$http.get('/api/search_participant?no_mfl='+ 'no_mfl').then((response) => {
-                // If there was an error set the error message, if not fill the users array.
-                if(response.data.error)
-                {
-                    this.error = response.data.error;
-                    toastr.error(this.error, 'Search Notification', {timeOut: 5000});
-                }
-                else
-                {
-                    this.users = response.data.data.data;
-                    this.pagination = response.data.pagination;
-                    toastr.success('The search results below were obtained.', 'Search Notification', {timeOut: 5000});
-                }
-                // The request is finished, change the loading to false again.
-                this.loading = false;
-                // Clear the query.
-                this.query = '';
-            });
-        },
-
-        filter_by_region: function() {
-            // Clear the error message.
-            this.error = '';
-            // Empty the users array so we can fill it with the new users.
-            this.users = [];
-            // Set the loading property to true, this will display the "Searching..." button.
-            this.loading = true;
-
-            // Making a get request to our API and passing the query to it.
-             //get users filtered by facility
-             if (this.facility) {
-                this.$http.get('/api/search_participant?facility='+ this.facility).then((response) => {
-                    // If there was an error set the error message, if not fill the users array.
-                    if(response.data.error)
-                    {
-                        this.error = response.data.error;
-                        toastr.error(this.error, 'Search Notification', {timeOut: 5000});
-                    }
-                    else
-                    {
-                        this.users = response.data.data.data;
-                        this.pagination = response.data.pagination;
-                        toastr.success('The search results below were obtained.', 'Search Notification', {timeOut: 5000});
-                    }
-                    // The request is finished, change the loading to false again.
-                    this.loading = false;
-                });
-            }
-            
-            //get users filtered by sub county
-
-            else if (this.sub_county) {
-                this.$http.get('/api/search_participant?sub_county='+ this.sub_county).then((response) => {
-                    // If there was an error set the error message, if not fill the users array.
-                    if(response.data.error)
-                    {
-                        this.error = response.data.error;
-                        toastr.error(this.error, 'Search Notification', {timeOut: 5000});
-                    }
-                    else
-                    {
-                        this.users = response.data.data.data;
-                        this.pagination = response.data.pagination;
-                        toastr.success('The search results below were obtained.', 'Search Notification', {timeOut: 5000});
-                    }
-                    // The request is finished, change the loading to false again.
-                    this.loading = false;
-
-                });
-            }
-
-            //get users filtered by county
-
-            else if (this.county) {
-                this.$http.get('/api/search_participant?county=' + this.county ).then((response) => {
-                    // If there was an error set the error message, if not fill the users array.
-                    if(response.data.error)
-                    {
-                        this.error = response.data.error;
-                        toastr.error(this.error, 'Search Notification', {timeOut: 5000});
-                    }
-                    else
-                    {
-                        this.users = response.data.data.data;
-                        this.pagination = response.data.pagination;
-                        toastr.success('The search results below were obtained.', 'Search Notification', {timeOut: 5000});
-                    }
-                    // The request is finished, change the loading to false again.
-                    this.loading = false;
-                });
-            }
-
-            //get default users
-            else{
-                this.getVueUsers(this.pagination.current_page);
-                // The request is finished, change the loading to false again.
-                this.loading = false;
-            }
-           
         },
 
         populateUser: function(user){

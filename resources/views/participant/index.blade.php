@@ -21,7 +21,7 @@
                         {!! trans('messages.back') !!}
                     </a> -->
                 @permission('download-participants-list')
-                    <a class="btn btn-sm btn-nephritis" :href="'/workbook'">
+                    <a style="display:none" class="btn btn-sm btn-nephritis" :href="'/workbook'">
                         <i class="fa fa-book"></i>
                         Download Workbook
                     </a>
@@ -29,7 +29,6 @@
                     <button style="display:none" class="btn btn-sm btn-nephritis" id="import" data-toggle="modal" data-target="#import-user-list"><i class="fa fa-level-down"></i> Import Users</button>
                 @endpermission
                     <button style="display:none" class="btn btn-sm btn-registered" @click="registered"><i class="fa fa-address-card"></i> Self Registered</button>
-                	<button style="display:none" class="btn btn-sm btn-primary" @click="no_mfl"><i class="fa fa-address-card"></i> Participants Without Facilities</button>
                 </h5>
             </div>
             <div class="col-md-3">
@@ -94,8 +93,14 @@
                             </select>
                         </div>
                     </div>
+                    <div v-if = "role == 4 || role ==7" class="col-sm-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" v-model="no_mfl" id="no_mfl" >
+                            <label class="form-check-label" for="no_mfl">Include those without a facility</label>
+                        </div>
+                    </div>
                     <div class="col-sm-3">
-                        <button class="btn btn-sm btn-alizarin" type="submit" @click="filter_by_region()" v-if="!loading">Filter </button>
+                        <button class="btn btn-sm btn-alizarin" type="submit" @click="search()" v-if="!loading">Filter </button>
                         <button class="btn btn-sm btn-alizarin" type="button" disabled="disabled" v-if="loading">Searching...</button>
                     </div>                
                 </div>
