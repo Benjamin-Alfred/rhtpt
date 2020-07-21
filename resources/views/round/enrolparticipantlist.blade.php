@@ -96,7 +96,7 @@
                         <td>
                             <input type="checkbox" :value="participant.id" name="selectedParticipants[]" v-model="selectedParticipants"/>
                         </td>
-                        <td>@{{ participant.name }}</td>
+                        <td>@{{ participant.first_name }} @{{ participant.middle_name }} @{{ participant.last_name }}</td>
                         <td>@{{ participant.uid }}</td>
                         <td>@{{ participant.fac }}</td>
                         <td>@{{ participant.phone }}</td>

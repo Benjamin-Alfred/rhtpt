@@ -117,7 +117,7 @@
                 </tr>
                 <tr v-for="(participant, key) in participants">                                        
                     <td>@{{ key + 1 + ((pagination.current_page - 1) * pagination.per_page) }}</td>
-                    <td>@{{ participant.name }}</td>
+                    <td>@{{ participant.first_name }} @{{ participant.middle_name }} @{{ participant.last_name }}</td>
                     <td>@{{ participant.uid }}</td>
                     <td>@{{ participant.phone }}</td>
                     <td>@{{ participant.facility_name }}</td>
