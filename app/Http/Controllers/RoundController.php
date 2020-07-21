@@ -498,6 +498,7 @@ class RoundController extends Controller
                 ->join('counties', 'sub_counties.county_id', '=', 'counties.id')
                 ->leftJoin('pt', 'enrolments.id', '=', 'pt.enrolment_id')
                 ->where('enrolments.round_id', '=', $round)
+                ->whereNull('enrolments.deleted_at')
                 ->select('users.*', 'facilities.name AS facility_name', 'sub_counties.name AS sub_county_name', 'counties.name AS county_name', 'pt.panel_status AS result_status');
 
 
